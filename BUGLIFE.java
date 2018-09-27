@@ -1,39 +1,89 @@
 import java.io.*;
 import java.util.*;
 class Solution{
-	static final int ma=10000001;
+	static int color[]; 
+	static boolean visited[];
 	public static void main(String[] args)throws Exception {
-		Reader sc=new Reader();
-		int arr[]=new int[ma+2];
-		for(int i=2;i<=Math.sqrt(ma);i++)
-			{
-				if(arr[i]==0)
-				{
-					arr[i]=i;
-					for(int j=2*i;j<arr.length;j+=i)
-					{
-						if(arr[j]==0)
-						{
-							arr[j]=i;
-						}
-					}
-				}
-			}
-
-			Long b[]=new Long[ma+2];
-			b[1]=0L;b[0]=0L;
-			for(int i=2;i<=ma;i++)
-		{b[i]=b[i-1]+arr[i];}
-
+		Reader sc=new Reader ();
 		int t=sc.nextInt();
+		int scenario=1;
 		while(--t>=0)
 		{
 			int n=sc.nextInt();
+			int edge=sc.nextInt();
+			ArrayList<Integer>arr[]=new ArrayList[n+1];
+			for(int i=0;i<=n;i++)
+			{
+				arr[i]=new ArrayList<Integer>();
+			}
+			for(int i=0;i<edge;i++)
+			{
+				int st=sc.nextInt();
+				int en=sc.nextInt();
+				arr[st].add(en);
+				arr[en].add(st);
+
+			}
+			visited=new boolean[n+1];
+			Arrays.fill(visited,false);
+			color=new int[n+1];
+			Arrays.fill(color,0);
 			
-			System.out.println(b[n]);
+
+
+
+			System.out.println("Scenario #"+scenario+":");
+			boolean str=false;
+			for(int i=1;i<=n;i++){if(!visited[i])str=dfsnoCycle(arr,n,i);
+				if(str){break;}}
+			++scenario;
+			if(str)
+			{System.out.println("Suspicious bugs found!");}
+			else
+			{System.out.println("No suspicious bugs found!");}
 		}
+
 	}
-		static class Reader
+	public static boolean dfsnoCycle(ArrayList<Integer>arr[],int n,int k)
+	{
+		Stack <Integer>stack=new Stack<Integer>();
+		boolean found=false;
+		
+		stack.push(k);
+		if(color[k]==0){color[k]=1;}
+		visited[k]=true;
+		while(!stack.isEmpty())
+		{
+			int num=stack.pop();
+			for(int i:arr[num])
+			{
+
+				if(!visited[i])
+				{	
+					stack.push(i);
+					visited[i]=true;
+					if(color[i]==color[num] && color[i]!=0)
+					{
+						color[num]=color[num]==1 ? 2:1;
+					}
+					else
+					{
+						color[i]=color[num]==1 ?2:1;
+					}
+				}
+				else if(visited[i] &&color[num]==color[i])
+				{
+					found=true;
+					break;
+				}
+			}
+		}
+		//System.out.println(found);
+
+		return found;
+}
+	
+	static class Reader
     {
         final private int BUFFER_SIZE = 1 << 16;
         private DataInputStream din;
@@ -153,4 +203,5 @@ class Solution{
             din.close();
         }
     }
+
 }
